@@ -1,0 +1,13 @@
+package com.luminar.service;
+
+import java.util.List;
+
+import com.library.entity.Book;
+
+public interface BookService {
+	Book addBook( Book book );
+	List<Book> getAllBooks();
+	Book getBookById(long id);
+	Book updateBook(Long id, Book book);
+	void deleteBook(Long id);
+}

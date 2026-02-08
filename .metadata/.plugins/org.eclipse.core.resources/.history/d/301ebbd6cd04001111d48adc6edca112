@@ -1,0 +1,5 @@
+package com.luminar.entity;
+
+public class Book {
+
+}

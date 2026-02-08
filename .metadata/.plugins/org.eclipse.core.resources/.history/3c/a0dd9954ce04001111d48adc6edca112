@@ -1,0 +1,5 @@
+package com.luminar.repository;
+
+public interface BookRepository {
+
+}

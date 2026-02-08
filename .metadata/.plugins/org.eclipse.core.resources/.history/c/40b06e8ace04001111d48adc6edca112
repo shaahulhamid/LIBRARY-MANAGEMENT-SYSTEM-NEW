@@ -1,0 +1,5 @@
+package com.luminar.service;
+
+public interface BookService {
+
+}

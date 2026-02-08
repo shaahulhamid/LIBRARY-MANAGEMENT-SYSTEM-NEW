@@ -1,0 +1,51 @@
+package com.luminar.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.library.entity.Book;
+import com.library.repository.BookRepository;
+
+@Service
+public class BookServiceImpl implements BookService{
+
+	@Autowired
+	private BookRepository bookRepo; 
+	
+	@Override
+	public Book addBook(Book book) {
+		return bookRepo.save(book);
+	}
+
+	@Override
+	public List<Book> getAllBooks() {
+		return bookRepo.findAll();
+	}
+
+	@Override
+	public Book getBookById(long id) {
+		return bookRepo.findById(id).orElse(null);
+	}
+
+	@Override
+	public Book updateBook(Long id, Book book) {
+		Book current = bookRepo.findById(id).orElse(null);
+		
+		if (current != null) {
+			current.setTitle(book.getTitle());
+			current.setAuthor(book.getAuthor());
+			current.setCategory(book.getCategory());
+			current.setQuantity(book.getQuantity());
+			return bookRepo.save(current);
+		}
+		return null;
+	}
+
+	@Override
+	public void deleteBook(Long id) {
+		bookRepo.deleteById(id);
+	}
+
+}
