@@ -1,0 +1,36 @@
+package com.library.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	// Temporary security rule
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		// Disable CSRF (needed for browser-based applications using sessions)
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				//  Allow register/login without authentication
+				.requestMatchers("/api/auth/register").permitAll().requestMatchers("/api/auth/login").permitAll()
+
+				// Protect all other end points
+				.anyRequest().authenticated())
+
+				//  Disable default login form
+				.formLogin(form -> form.disable())
+
+				// Temporary basic auth
+				.httpBasic(Customizer.withDefaults());
+		return http.build();
+	}
+}
