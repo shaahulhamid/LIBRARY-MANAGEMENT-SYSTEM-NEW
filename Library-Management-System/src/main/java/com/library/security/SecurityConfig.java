@@ -1,36 +1,53 @@
 package com.library.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 
-	// Temporary security rule
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		// Disable CSRF (needed for browser-based applications using sessions)
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				//  Allow register/login without authentication
-				.requestMatchers("/api/auth/register").permitAll().requestMatchers("/api/auth/login").permitAll()
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-				// Protect all other end points
-				.anyRequest().authenticated())
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-				//  Disable default login form
-				.formLogin(form -> form.disable())
+        http
+            // Disable CSRF
+            .csrf(csrf -> csrf.disable())
 
-				// Temporary basic auth
-				.httpBasic(Customizer.withDefaults());
-		return http.build();
-	}
+            // Stateless session (JWT)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+
+            // Authorization rules
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
+            )
+
+            // Disable default login
+            .formLogin(form -> form.disable())
+
+            // Disable Basic Auth
+            .httpBasic(basic -> basic.disable());
+
+        // Add JWT filter
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 }
