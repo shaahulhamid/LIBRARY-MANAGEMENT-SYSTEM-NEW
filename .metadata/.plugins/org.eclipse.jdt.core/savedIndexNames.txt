@@ -1,0 +1,4 @@
+INDEX VERSION 1.134+F:\Resumes_2026\LIBRARY-MANAGEMENT-SYSTEM\.metadata\.plugins\org.eclipse.jdt.core
+2942948856.index
+1865797976.index
+3815984493.index
