@@ -1,0 +1,27 @@
+package com.library.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.library.entity.Book;
+import com.library.entity.BorrowRecord;
+import com.library.repository.BookRepository;
+import com.library.repository.BorrowRecordRepository;
+
+public class BorrowServiceImpl implements BorrowService{
+	@Autowired
+	private BookRepository bookRepo;
+	@Autowired
+	private BorrowRecordRepository recordRepo;
+	@Override
+	public BorrowRecord borrowBook(String username, Long bookId) {
+		Book book = bookRepo.findById(bookId)
+				.orElseThrow(()->new RuntimeException("Book not found!"));
+		return null;
+	}
+	@Override
+	public BorrowRecord returnBook(Long bookId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

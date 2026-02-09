@@ -3,6 +3,7 @@ package com.library.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,41 +14,52 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Autowired
+	private JwtAuthFilter jwtAuthFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-        http
-            // Disable CSRF
-            .csrf(csrf -> csrf.disable())
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-            // Stateless session (JWT)
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+		http
+				// Disable CSRF
+				.csrf(csrf -> csrf.disable())
 
-            // Authorization rules
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
+				// State less session (JWT)
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // Disable default login
-            .formLogin(form -> form.disable())
+				// Authorization rules
+				.authorizeHttpRequests(auth -> auth
 
-            // Disable Basic Auth
-            .httpBasic(basic -> basic.disable());
+						.requestMatchers("/api/auth/**").permitAll()
 
-        // Add JWT filter
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+						// GET allowed for USER + ADMIN
+						.requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("USER", "ADMIN")
 
-        return http.build();
-    }
+						// POST only ADMIN
+						.requestMatchers(HttpMethod.POST, "/api/books/**").hasRole("ADMIN")
+
+						// PUT only ADMIN
+						.requestMatchers(HttpMethod.PUT, "/api/books/**").hasRole("ADMIN")
+
+						// DELETE only ADMIN
+						.requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")
+
+						.anyRequest().authenticated())
+
+				// Disable default login
+				.formLogin(form -> form.disable())
+
+				// Disable Basic Auth
+				.httpBasic(basic -> basic.disable());
+
+		// Add JWT filter
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
+	}
 }
