@@ -1,6 +1,7 @@
 package com.library.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,5 +51,10 @@ public class BorrowServiceImpl implements BorrowService{
 		record.setReturnDate(LocalDate.now());
 		return recordRepo.save(record);
 	}
+	@Override
+	public List<BorrowRecord> getBorrowHistory(String username) {
+		return recordRepo.findByUsername(username);
+	}
+	
 	
 }

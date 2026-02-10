@@ -1,6 +1,10 @@
 package com.library.controller;
 
+import java.security.Principal;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,8 +21,9 @@ public class BorrowController {
 	private BorrowService borrowService;
 	
 	//Borrow book
-	@PostMapping("/{username}/{bookId}")
-	public BorrowRecord borrowBook(@PathVariable String username, @PathVariable Long bookId) {
+	@PostMapping("/{bookId}")
+	public BorrowRecord borrowBook(@PathVariable Long bookId, Principal principal) {
+		String username = principal.getName();
 		return borrowService.borrowBook(username, bookId);
 	}
 	
@@ -27,5 +32,15 @@ public class BorrowController {
 	public BorrowRecord returnBook(@PathVariable Long recordId) {
 		return borrowService.returnBook(recordId);
 	}
+	
+	@GetMapping("/history")
+	public List<BorrowRecord> getHistory(Principal principal){
+		//Logged in user name for JWT Token
+		String username = principal.getName();
+		
+		return borrowService.getBorrowHistory(username);
+	}
+	
+	
 
 }

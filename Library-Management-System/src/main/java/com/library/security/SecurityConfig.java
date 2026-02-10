@@ -36,6 +36,9 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 
 						.requestMatchers("/api/auth/**").permitAll()
+						
+						// Borrow APIs allowed for USER + ADMIN
+						.requestMatchers("/api/borrow/**").hasAnyRole("USER", "ADMIN")
 
 						// GET allowed for USER + ADMIN
 						.requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("USER", "ADMIN")
@@ -48,6 +51,8 @@ public class SecurityConfig {
 
 						// DELETE only ADMIN
 						.requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")
+						
+						
 
 						.anyRequest().authenticated())
 
