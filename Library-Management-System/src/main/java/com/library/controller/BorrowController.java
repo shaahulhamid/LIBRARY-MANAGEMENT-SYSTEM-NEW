@@ -29,8 +29,9 @@ public class BorrowController {
 	
 	//Return book
 	@PutMapping("/return/{recordId}")
-	public BorrowRecord returnBook(@PathVariable Long recordId) {
-		return borrowService.returnBook(recordId);
+	public BorrowRecord returnBook(@PathVariable Long recordId, Principal principal) {
+		String username = principal.getName();
+		return borrowService.returnBook(recordId,username);
 	}
 	
 	@GetMapping("/history")

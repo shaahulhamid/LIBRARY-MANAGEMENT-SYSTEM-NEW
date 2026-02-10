@@ -36,13 +36,13 @@ public class BorrowServiceImpl implements BorrowService{
 		return recordRepo.save(record);
 	}
 	@Override
-	public BorrowRecord returnBook(Long recordId) {
-		BorrowRecord record = recordRepo.findById(recordId)
+	public BorrowRecord returnBook(Long recordId, String username) {
+		BorrowRecord record = recordRepo.findByIdAndUsername(recordId,username)
 				.orElseThrow(()->new RuntimeException("Record not found!"));
 		if ( record.isReturned())
 			throw new RuntimeException("Already Returned!");
 		// Increase quantity
-		Book book = bookRepo.findById(recordId)
+		Book book = bookRepo.findById(record.getBookId())
 				.orElseThrow(()->new RuntimeException("Book not found!"));
 		book.setQuantity(book.getQuantity()+1);
 		bookRepo.save(book);

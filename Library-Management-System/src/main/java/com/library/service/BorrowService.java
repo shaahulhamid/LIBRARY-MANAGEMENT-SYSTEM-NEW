@@ -6,6 +6,6 @@ import com.library.entity.BorrowRecord;
 
 public interface BorrowService {
 	BorrowRecord borrowBook(String username, Long bookId);
-	BorrowRecord returnBook(Long recordId);
 	List<BorrowRecord> getBorrowHistory(String username);
+	BorrowRecord returnBook(Long recordId, String username);
 }
